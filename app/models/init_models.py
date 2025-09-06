@@ -2,7 +2,6 @@ import torch
 import joblib
 import pandas as pd
 import numpy as np
-from pathlib import Path
 
 from app.models.hybrid_recommender import HybridRecommender
 from app.models.retrieval_net import RetrievalNet
