@@ -1,0 +1,127 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /recommend:
+    post:
+      summary: Api Recommend
+      operationId: api_recommend_recommend_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /similar/{meal_id}:
+    get:
+      summary: Api Similar Meals
+      operationId: api_similar_meals_similar__meal_id__get
+      parameters:
+      - name: meal_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Meal Id
+      - name: k
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: K
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /top-bias:
+    get:
+      summary: Api Top Bias Meals
+      operationId: api_top_bias_meals_top_bias_get
+      parameters:
+      - name: k
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: K
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RecRequest:
+      properties:
+        user_id:
+          type: integer
+          title: User Id
+        k:
+          type: integer
+          title: K
+          default: 10
+      type: object
+      required:
+      - user_id
+      title: RecRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+
