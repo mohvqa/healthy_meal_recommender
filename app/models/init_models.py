@@ -73,6 +73,7 @@ base_model = HybridRecommender(
     meal_feat_dim=meal_features.shape[1] + desc_vecs.shape[1],
     hyperparams=hyperparams,
 )
+
 base_model.load_state_dict(torch.load(DATA_DIR / "hybrid_recommender.pt", map_location=device))
 base_model.eval()
 
