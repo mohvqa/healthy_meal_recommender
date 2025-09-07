@@ -6,4 +6,4 @@ def get_top_k_bias_meals(k: int = 10):
     idxs = meal_bias.argsort(descending=True)[:k]
 
     meal_ids = [idx_to_mid[idx.item()] for idx in idxs]
-    return json.dumps({"meals": meal_ids})
+    return {"meals": meal_ids}

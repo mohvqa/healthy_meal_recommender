@@ -14,4 +14,4 @@ def get_top_k_similar_meals(meal_id: int, k: int = 10):
     top_indices = cos_sim.argsort(descending=True)[:k + 1]
     top_meal_ids = [idx_to_mid[i.item()] for i in top_indices]
 
-    return json.dumps({"similar": top_meal_ids[1:]})
+    return {"similar": top_meal_ids[1:]}
