@@ -45,3 +45,7 @@ chmod +x scripts/setup_env.sh
 chmod +x scripts/run_server.sh
 ./scripts/run_server.sh
 # → Swagger at http://localhost:8002/docs
+
+# 4. Test API
+chmod +x scripts/test_api.sh
+./scripts/test_api.sh
