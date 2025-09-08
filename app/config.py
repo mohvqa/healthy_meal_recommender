@@ -1,7 +1,9 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
+
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
@@ -20,7 +22,9 @@ class Settings(BaseSettings):
     # Device
     device: str = "cpu"
 
-    class Config:
-        env_file = ".env"
+    # Environment extras (used by start scripts)
+    workers: int = 4
+    log_level: str = "info"
+    model_dir: Path = Path("./models")
 
 settings = Settings()
