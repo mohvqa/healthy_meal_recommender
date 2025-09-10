@@ -18,6 +18,12 @@ Built for small-to-medium catalogs (≲50k meals) and updated in near real-time 
 3. `/top-bias?k=10`  
    Returns the `k` meals with the highest learned bias term (global popularity proxy).
 
+4. `/recommend-cold`  
+   `POST {full user-attribute payload}` → returns `k` meals for a brand-new user.  
+   - No user-id lookup; user embedding masked to zero.  
+   - Single-stage: **HybridRecommender** scores entire catalogue in one pass.  
+   - Prediction driven by meal embeddings + user/ meal dense features (no RetrievalNet).
+
 ---
 
 ## 🧠 Model architecture
