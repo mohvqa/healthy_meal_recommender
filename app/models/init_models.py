@@ -82,11 +82,11 @@ retrieval_model.load_state_dict(torch.load(DATA_DIR / "retrieval.pt", map_locati
 retrieval_model.eval()
 
 # Public helpers
-def build_meal_dataset(df: pd.DataFrame):
-    return MealRatingDataset(df, uid_to_idx, mid_to_idx, user_features, meal_features, desc_vecs)
+def build_meal_dataset(df: pd.DataFrame, cold=False, cold_user_features=None,):
+    return MealRatingDataset(df, uid_to_idx, mid_to_idx, user_features, meal_features, desc_vecs, cold, cold_user_features,)
 
-def build_meal_loader(df: pd.DataFrame, batch_size=512, shuffle=True):
-    return DataLoader(build_meal_dataset(df), batch_size=batch_size, shuffle=shuffle, collate_fn=meal_collate_fn)
+def build_meal_loader(df: pd.DataFrame, batch_size=512, shuffle=True, cold=False, cold_user_features=None,):
+    return DataLoader(build_meal_dataset(df, cold, cold_user_features,), batch_size=batch_size, shuffle=shuffle, collate_fn=meal_collate_fn)
 
 def build_interaction_dataset(user_ids, meal_ids, labels):
     return InteractionDataset(user_ids, meal_ids, labels)
