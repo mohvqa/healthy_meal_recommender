@@ -31,27 +31,33 @@ class HybridRecommender(nn.Module):
         # final projection to score
         self.out_proj = nn.Linear(d, 1)
 
-    def forward(self, user_ids, meal_ids, user_feats, meal_feats):
-        u = self.user_emb_dropout(self.user_emb(user_ids))
-        m = self.meal_emb_dropout(self.meal_emb(meal_ids))
+    def forward(self, user_ids, meal_ids, user_feats, meal_feats, cold_start_mask=None):
+        if cold_start_mask is None:
+            cold_start_mask = torch.zeros_like(user_ids, dtype=torch.bool)
 
-        # Project the dense feature vectors to the same dimension d
+        bsz, device = user_ids.size(0), user_ids.device
+        d = self.user_emb.embedding_dim
+
+        # cold → zeros , warm → normal lookup
+        u_emb = torch.where(
+            cold_start_mask.unsqueeze(1),
+            torch.zeros(bsz, d, device=device),
+            self.user_emb_dropout(self.user_emb(user_ids))
+        )
+
+        m_emb = self.meal_emb_dropout(self.meal_emb(meal_ids))
         u_feat = self.user_feat_proj(user_feats)
         m_feat = self.meal_feat_proj(meal_feats)
 
-        # Stack into a 4-token sequence
-        seq = torch.stack([u, m, u_feat, m_feat], dim=1)
+        seq = torch.stack([u_emb, m_emb, u_feat, m_feat], dim=1)
+        pooled = self.transformer(seq).mean(dim=1)
+        score = self.out_proj(pooled).squeeze(1)
 
-        # Transformer forward
-        mask = None  # every token to attend to every other token
-        x = self.transformer(seq, src_key_padding_mask=mask)
-
-        # Global mean-pool
-        pooled = x.mean(dim=1)
-
-        raw_output = self.out_proj(pooled).squeeze(1)
-
-        # Add biases
-        u_bias = self.user_bias(user_ids).squeeze(1)
+        u_bias = torch.where(
+            cold_start_mask,
+            torch.zeros(bsz, device=device),
+            self.user_bias(user_ids).squeeze(1)
+        )
         m_bias = self.meal_bias(meal_ids).squeeze(1)
-        return raw_output + u_bias + m_bias
+
+        return score + u_bias + m_bias
